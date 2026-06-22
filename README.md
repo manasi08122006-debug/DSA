@@ -1,1 +1,3 @@
-# My DSA Journey
+# My DSA Journey 🚀
+
+Trying to improve coding skills.
