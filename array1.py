@@ -4,3 +4,10 @@ for i in array:
     if i>maximum:
         maximum=i
 print("the maximum integer is:",maximum)
+
+i=-3
+while i<=13:
+    print("**")
+    print("*")
+    i=i+1
+    
