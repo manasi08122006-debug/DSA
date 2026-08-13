@@ -1,18 +1,14 @@
 #include <stdio.h>
-
 #include <stdlib.h>
 
-
-
+//node structure creation
 typedef struct node{
-
 	int data;
-
 	struct node *next;
 
 }node;
 
-
+//
 
 void sh(node *head){
 
@@ -27,15 +23,10 @@ void sh(node *head){
 		curr=curr->next;
 
 				}
-
-
-
 }
 
 
-
-
-
+//function to create linked list
 node *create(node *head){
 
 	node *tail=NULL;
@@ -78,11 +69,9 @@ node *create(node *head){
 
 }
 
-
+//function to add element at start
 
 node *atstart(node *head){
-
-
 
 	node *newnode=(node *)malloc(sizeof(node));
 
@@ -96,11 +85,11 @@ node *atstart(node *head){
 
 	head=newnode;
 
-
-
 	return head;
 
 }
+
+//function to add element at end
 
 node *atend(node *head){
 
@@ -129,7 +118,7 @@ node *atend(node *head){
 
 
 
-
+//function to add element at end
 	node *newnode=(node *)malloc(sizeof(node));
 
 	newnode->next=NULL;
@@ -145,7 +134,7 @@ node *atend(node *head){
 }
 
 
-
+//function to insert element at any position
 node *insert(node *head){
 
 	node *mov=NULL;
@@ -163,9 +152,6 @@ node *insert(node *head){
 	printf("\nEnter the value at %d position:",pos);
 
 	scanf("%d",&newnode->data);
-
-
-
 
 
 	if(pos==1){
@@ -199,7 +185,7 @@ node *insert(node *head){
 }
 
 
-
+//function to delete element at the end
 node *deleteatend(node *head){
 
 	node *mov=NULL;
@@ -221,9 +207,6 @@ node *deleteatend(node *head){
 	}
 
 
-
-
-
 	for (int i=1;i<count-1;i++){
 
 		mov=mov->next;
@@ -241,7 +224,7 @@ node *deleteatend(node *head){
 }
 
 
-
+//function to delete element at the start
 node *deleteatstart(node *head){
 
 	node *curr=NULL;
@@ -258,7 +241,7 @@ node *deleteatstart(node *head){
 
 }
 
-
+//function to delete element at any position
 
 node *deleteatany(node *head){
 
@@ -334,19 +317,16 @@ node *deleteatany(node *head){
 
 	}
 
-
-
-
-
 	return head;
 
 }
 
-
+//function to search an element in linked list
 
 void sear(node *head){
 
 	int k=0;
+	int t=1;
 
 	int found=0;
 
@@ -371,10 +351,18 @@ void sear(node *head){
 		curr=curr->next;
 
 	}
+	curr=head;
+	while(curr->data!=k){
+
+		t++;
+
+		curr=curr->next;
+
+	}
 
 	if(found==1){
 
-		printf("%d is present in the linked list",k);
+		printf("%d is present in the linked list at position %d",k,t);
 
 
 
@@ -385,6 +373,34 @@ void sear(node *head){
 	}
 
 
+}
+
+node *reverse(node *head){
+
+	node *prev=NULL;
+
+	node *curr=head;
+
+	node *next=NULL;
+
+	while(curr!=NULL){
+
+		next=curr->next;
+
+		//stores the next node of current node 
+
+		curr->next=prev;
+
+
+		prev=curr;
+
+		curr=next;
+
+	}
+
+	head=prev;
+
+	return head;
 
 }
 
@@ -392,7 +408,7 @@ void sear(node *head){
 
 
 
-
+//main function
 
 int main(void) {
 
@@ -414,9 +430,11 @@ int main(void) {
 
 	printf("\nPress 8 to search ");
 
-	printf("\nPress 9 to display linked list");
+	printf("\nPress 9 to reverse the linked list");
 
-	printf("\nPress 10 to exit the program");
+	printf("\nPress 10 to display linked list");
+
+	printf("\nPress 11 to exit the program");
 
 	node *head=NULL;
 
@@ -508,7 +526,16 @@ int main(void) {
 
 			break;
 
+		
 		case 9:
+
+			head=reverse(head);
+
+			sh(head);
+
+			break;
+
+		case 10:
 
 			sh(head);
 
@@ -516,7 +543,7 @@ int main(void) {
 
 
 
-		case 10:
+		case 11:
 
 			ch=1;
 
@@ -527,10 +554,6 @@ int main(void) {
 		default:
 
 			printf("\nInvalid choice");
-
-
-
-
 
 		}
 
