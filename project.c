@@ -317,18 +317,20 @@ void deleteItem() {
 }
 
 void freeAll() {
-    while (itemHead != NULL) {
+    while (itemHead != NULL) {        /*sort starting node in some temporary variable and move
+                              head to next node and free the temporary variable*/
         struct Item *t = itemHead;
         itemHead = itemHead->next;
         free(t);
     }
-    while (saleHead != NULL) {
+    while (saleHead != NULL) {                //same logic
         struct Sale *t = saleHead;
         saleHead = saleHead->next;
         free(t);
     }
-    while (dequeueReorder() != -1) { }
-    while (pop() != -1) { }
+    while (dequeueReorder() != -1) { }       // call dequeueReorder until queue is empty
+                                            // call pop until stack is empty
+    while (pop() != -1) { }                 // call pop until stack is empty
 }
 
 
