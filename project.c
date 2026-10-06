@@ -1,5 +1,4 @@
 /* Stationery Items and Sales Management System
-   Simple menu-driven C program (student level)
 
    Data structures used:
    1. Singly linked list - items
@@ -7,6 +6,7 @@
    3. Queue (linked)     - reorder management
    4. Stack (linked)     - undo last sale
    5. Array + sorting    - sales percentage, profit and product analysis
+
 */
 
 #include <stdio.h>
@@ -54,7 +54,43 @@ int saleCounter = 0;
 #define PROF_LINE  "+----------------------+--------+--------------+\n"
 #define RANK_LINE  "+------+----------------------+--------------+\n"
 
-/* ---------- Item functions ---------- */
+/* ---------- Function prototypes (functions of all members) ---------- */
+/* Member 1 */
+struct Item *findItem(int id);
+void addItem();
+void displayItems();
+void updateItem();
+/* Member 2 */
+int isInQueue(int id);
+void enqueueReorder(int id);
+int dequeueReorder();
+void checkReorderLevels();
+void displayReorderQueue();
+void processReorder();
+void checkAvailability();
+/* Member 3 */
+void recordSale();
+void displaySales();
+void deleteItem();
+void freeAll();
+/* Member 4 */
+void push(int sale_id);
+int pop();
+void undoLastSale();
+void searchByName();
+void salesPercentage();
+/* Member 5 */
+int copyToArray(struct Item *arr[]);
+float itemProfit(struct Item *t);
+void sortArray(struct Item *arr[], int n, int mode);
+void profitAnalysis();
+void productAnalysis();
+
+
+/* =====================================================================
+   MEMBER 1 : ITEM MANAGEMENT (singly linked list of items)
+   ===================================================================== */
+
 struct Item *findItem(int id) {
     struct Item *t = itemHead;
     while (t != NULL) {
@@ -134,53 +170,11 @@ void updateItem() {
     printf("Item updated.\n");
 }
 
-void deleteItem() {
-    int id;
-    printf("Item ID to delete: ");
-    scanf("%d", &id);
-    struct Item *t = itemHead, *prev = NULL;
-    while (t != NULL && t->id != id) {
-        prev = t;
-        t = t->next;
-    }
-    if (t == NULL) { printf("Item not found.\n"); return; }
-    if (prev == NULL) itemHead = t->next;
-    else prev->next = t->next;
-    free(t);
-    printf("Item deleted.\n");
-}
 
-/* ---------- Item availability ---------- */
-void checkAvailability() {
-    int id;
-    printf("Item ID: ");
-    scanf("%d", &id);
-    struct Item *t = findItem(id);
-    if (t == NULL) printf("Item not found.\n");
-    else if (t->quantity > 0)
-        printf("%s is available. Stock = %d\n", t->name, t->quantity);
-    else
-        printf("%s is OUT OF STOCK.\n", t->name);
-}
+/* =====================================================================
+   MEMBER 2 : REORDER QUEUE (linked queue) + AVAILABILITY CHECK
+   ===================================================================== */
 
-void searchByName() {
-    char key[30];
-    int found = 0;
-    printf("Enter name to search: ");
-    scanf(" %29[^\n]", key);
-    struct Item *t = itemHead;
-    while (t != NULL) {
-        if (strcmp(t->name, key) == 0) {
-            printf("Found: ID %d, %s, Qty %d, Price %.2f\n",
-                   t->id, t->name, t->quantity, t->selling_price);
-            found = 1;
-        }
-        t = t->next;
-    }
-    if (!found) printf("No item with that name.\n");
-}
-
-/* ---------- Reorder queue ---------- */
 int isInQueue(int id) {
     struct QueueNode *q = front;
     while (q != NULL) {
@@ -246,24 +240,23 @@ void processReorder() {
     printf("New stock of %s = %d\n", t->name, t->quantity);
 }
 
-/* ---------- Stack (undo) ---------- */
-void push(int sale_id) {
-    struct StackNode *n = (struct StackNode *)malloc(sizeof(struct StackNode));
-    n->sale_id = sale_id;
-    n->next = top;
-    top = n;
+void checkAvailability() {
+    int id;
+    printf("Item ID: ");
+    scanf("%d", &id);
+    struct Item *t = findItem(id);
+    if (t == NULL) printf("Item not found.\n");
+    else if (t->quantity > 0)
+        printf("%s is available. Stock = %d\n", t->name, t->quantity);
+    else
+        printf("%s is OUT OF STOCK.\n", t->name);
 }
 
-int pop() {
-    if (top == NULL) return -1;
-    struct StackNode *t = top;
-    int id = t->sale_id;
-    top = top->next;
-    free(t);
-    return id;
-}
 
-/* ---------- Sales ---------- */
+/* =====================================================================
+   MEMBER 3 : SALES RECORDS (linked list) + NODE DELETION + CLEANUP
+   ===================================================================== */
+
 void recordSale() {
     int id, qty;
     printf("Item ID sold: ");
@@ -312,6 +305,58 @@ void displaySales() {
     printf(SALE_LINE);
 }
 
+void deleteItem() {
+    int id;
+    printf("Item ID to delete: ");
+    scanf("%d", &id);
+    struct Item *t = itemHead, *prev = NULL;
+    while (t != NULL && t->id != id) {
+        prev = t;
+        t = t->next;
+    }
+    if (t == NULL) { printf("Item not found.\n"); return; }
+    if (prev == NULL) itemHead = t->next;
+    else prev->next = t->next;
+    free(t);
+    printf("Item deleted.\n");
+}
+
+void freeAll() {
+    while (itemHead != NULL) {
+        struct Item *t = itemHead;
+        itemHead = itemHead->next;
+        free(t);
+    }
+    while (saleHead != NULL) {
+        struct Sale *t = saleHead;
+        saleHead = saleHead->next;
+        free(t);
+    }
+    while (dequeueReorder() != -1) { }
+    while (pop() != -1) { }
+}
+
+
+/* =====================================================================
+   MEMBER 4 : UNDO (stack) + SEARCH BY NAME + SALES PERCENTAGE
+   ===================================================================== */
+
+void push(int sale_id) {
+    struct StackNode *n = (struct StackNode *)malloc(sizeof(struct StackNode));
+    n->sale_id = sale_id;
+    n->next = top;
+    top = n;
+}
+
+int pop() {
+    if (top == NULL) return -1;
+    struct StackNode *t = top;
+    int id = t->sale_id;
+    top = top->next;
+    free(t);
+    return id;
+}
+
 void undoLastSale() {
     int sid = pop();
     if (sid == -1) { printf("No sale to undo.\n"); return; }
@@ -336,7 +381,46 @@ void undoLastSale() {
     printf("Sale #%d undone.\n", sid);
 }
 
-/* ---------- Analysis (array + sorting) ---------- */
+void searchByName() {
+    char key[30];
+    int found = 0;
+    printf("Enter name to search: ");
+    scanf(" %29[^\n]", key);
+    struct Item *t = itemHead;
+    while (t != NULL) {
+        if (strcmp(t->name, key) == 0) {
+            printf("Found: ID %d, %s, Qty %d, Price %.2f\n",
+                   t->id, t->name, t->quantity, t->selling_price);
+            found = 1;
+        }
+        t = t->next;
+    }
+    if (!found) printf("No item with that name.\n");
+}
+
+void salesPercentage() {
+    struct Item *arr[100];
+    int n = copyToArray(arr), i, total = 0;
+    if (n == 0) { printf("No items.\n"); return; }
+    for (i = 0; i < n; i++) total += arr[i]->total_sold;
+    if (total == 0) { printf("No sales yet.\n"); return; }
+
+    sortArray(arr, n, 1);
+    printf("\nSales percentage (highest first)\n");
+    printf(PCT_LINE);
+    printf("| %-20s | %6s | %9s |\n", "Item", "Sold", "Share");
+    printf(PCT_LINE);
+    for (i = 0; i < n; i++)
+        printf("| %-20s | %6d | %8.2f%% |\n", arr[i]->name,
+               arr[i]->total_sold, (arr[i]->total_sold * 100.0) / total);
+    printf(PCT_LINE);
+}
+
+
+/* =====================================================================
+   MEMBER 5 : PROFIT AND PRODUCT ANALYSIS (array + sorting)
+   ===================================================================== */
+
 int copyToArray(struct Item *arr[]) {
     int n = 0;
     struct Item *t = itemHead;
@@ -366,24 +450,6 @@ void sortArray(struct Item *arr[], int n, int mode) {
             }
         }
     }
-}
-
-void salesPercentage() {
-    struct Item *arr[100];
-    int n = copyToArray(arr), i, total = 0;
-    if (n == 0) { printf("No items.\n"); return; }
-    for (i = 0; i < n; i++) total += arr[i]->total_sold;
-    if (total == 0) { printf("No sales yet.\n"); return; }
-
-    sortArray(arr, n, 1);
-    printf("\nSales percentage (highest first)\n");
-    printf(PCT_LINE);
-    printf("| %-20s | %6s | %9s |\n", "Item", "Sold", "Share");
-    printf(PCT_LINE);
-    for (i = 0; i < n; i++)
-        printf("| %-20s | %6d | %8.2f%% |\n", arr[i]->name,
-               arr[i]->total_sold, (arr[i]->total_sold * 100.0) / total);
-    printf(PCT_LINE);
 }
 
 void profitAnalysis() {
@@ -437,23 +503,11 @@ void productAnalysis() {
     printf(RANK_LINE);
 }
 
-/* ---------- Cleanup ---------- */
-void freeAll() {
-    while (itemHead != NULL) {
-        struct Item *t = itemHead;
-        itemHead = itemHead->next;
-        free(t);
-    }
-    while (saleHead != NULL) {
-        struct Sale *t = saleHead;
-        saleHead = saleHead->next;
-        free(t);
-    }
-    while (dequeueReorder() != -1) { }
-    while (pop() != -1) { }
-}
 
-/* ---------- Menu ---------- */
+/* =====================================================================
+   EVERYONE : MENU AND MAIN (unchanged)
+   ===================================================================== */
+
 void displayMenu() {
     printf("\n+----------------------------------------+\n");
     printf("|   STATIONERY MANAGEMENT SYSTEM         |\n");
