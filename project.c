@@ -249,17 +249,18 @@ void checkAvailability() {
 }
 
 
-/* MEMBER 3 : SALES RECORDS (linked list) + NODE DELETION + CLEANUP*/
+/* MEMBER 3 : sales records (linked list) + NODE DELETION + freeAll */
 
 void recordSale() {
     int id, qty;
     printf("Item ID sold: ");
     scanf("%d", &id);
-    struct Item *it = findItem(id);
+    struct Item *it = findItem(id);       //return pointer to item with given id
     if (it == NULL) { printf("Item not found.\n"); return; }
     printf("Quantity: ");
-    scanf("%d", &qty);
-    if (qty <= 0 || qty > it->quantity) {
+    scanf("%d", &qty);           //get quantity sold
+    if (qty <= 0 || qty > it->quantity)  //checks for avalibility of quantity
+     {
         printf("Invalid quantity. Available = %d\n", it->quantity);
         return;
     }
