@@ -87,9 +87,7 @@ void profitAnalysis();
 void productAnalysis();
 
 
-/* =====================================================================
-   MEMBER 1 : ITEM MANAGEMENT (singly linked list of items)
-   ===================================================================== */
+/* MEMBER 1 : ITEM MANAGEMENT (singly linked list of items) */
 
 struct Item *findItem(int id) {
     struct Item *t = itemHead;
@@ -171,9 +169,7 @@ void updateItem() {
 }
 
 
-/* =====================================================================
-   MEMBER 2 : REORDER QUEUE (linked queue) + AVAILABILITY CHECK
-   ===================================================================== */
+/* MEMBER 2 : REORDER QUEUE (linked queue) + AVAILABILITY CHECK */
 
 int isInQueue(int id) {
     struct QueueNode *q = front;
@@ -253,9 +249,7 @@ void checkAvailability() {
 }
 
 
-/* =====================================================================
-   MEMBER 3 : SALES RECORDS (linked list) + NODE DELETION + CLEANUP
-   ===================================================================== */
+/* MEMBER 3 : SALES RECORDS (linked list) + NODE DELETION + CLEANUP*/
 
 void recordSale() {
     int id, qty;
@@ -337,9 +331,7 @@ void freeAll() {
 }
 
 
-/* =====================================================================
-   MEMBER 4 : UNDO (stack) + SEARCH BY NAME + SALES PERCENTAGE
-   ===================================================================== */
+/* MEMBER 4 : UNDO (stack) + SEARCH BY NAME + SALES PERCENTAGE */
 
 void push(int sale_id) {
     struct StackNode *n = (struct StackNode *)malloc(sizeof(struct StackNode));
@@ -417,9 +409,7 @@ void salesPercentage() {
 }
 
 
-/* =====================================================================
-   MEMBER 5 : PROFIT AND PRODUCT ANALYSIS (array + sorting)
-   ===================================================================== */
+/* MEMBER 5 : PROFIT AND PRODUCT ANALYSIS (array + sorting) */
 
 int copyToArray(struct Item *arr[]) {
     int n = 0;
@@ -504,9 +494,7 @@ void productAnalysis() {
 }
 
 
-/* =====================================================================
-   EVERYONE : MENU AND MAIN (unchanged)
-   ===================================================================== */
+/* MENU AND MAIN  */
 
 void displayMenu() {
     printf("\n+----------------------------------------+\n");
