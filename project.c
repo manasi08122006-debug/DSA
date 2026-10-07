@@ -171,43 +171,43 @@ void updateItem() {
 
 /* MEMBER 2 : REORDER QUEUE (linked queue) + AVAILABILITY CHECK */
 
-int isInQueue(int id) {
-    struct QueueNode *q = front;
+int isInQueue(int id) {            //function to check  if item is in queue or not because we  we dont want duplicate inlow stock
+    struct QueueNode *q = front;   //pointer to traverse queue
     while (q != NULL) {
-        if (q->item_id == id) return 1;
+        if (q->item_id == id) return 1;   // if item already exist in queue
         q = q->next;
     }
-    return 0;
+    return 0; //if item does not exist in queue
 }
 
-void enqueueReorder(int id) {
-    struct QueueNode *n = (struct QueueNode *)malloc(sizeof(struct QueueNode));
-    n->item_id = id;
+void enqueueReorder(int id) {  //function to add low stock item in restock queue
+    struct QueueNode *n = (struct QueueNode *)malloc(sizeof(struct QueueNode)); //memory allocation
+    n->item_id = id;  
     n->next = NULL;
-    if (rear == NULL) front = rear = n;
-    else { rear->next = n; rear = n; }
+    if (rear == NULL) front = rear = n; //queue ia empty ,newnode is rear and front
+    else { rear->next = n; rear = n; }  //if not 1st node link to previous node
 }
 
-int dequeueReorder() {
-    if (front == NULL) return -1;
-    struct QueueNode *t = front;
+int dequeueReorder() { //functioon to remove item from queue that should be restocked
+    if (front == NULL) return -1;  //if queue is empty
+    struct QueueNode *t = front;  //creating tempory pointer
     int id = t->item_id;
     front = front->next;
-    if (front == NULL) rear = NULL;
+    if (front == NULL) rear = NULL; //queue is empty
     free(t);
-    return id;
+    return id;   //return item id that is removed
 }
 
-void checkReorderLevels() {
-    struct Item *t = itemHead;
+void checkReorderLevels() {  //function to check which item are low in stock to restock them
+    struct Item *t = itemHead; //scaning whole inventory and adds low stock item in queue
     while (t != NULL) {
         if (t->quantity <= t->reorder_level && !isInQueue(t->id))
-            enqueueReorder(t->id);
+            enqueueReorder(t->id);//if item is low in stock and item not already in queue then adds it to queue 
         t = t->next;
     }
 }
 
-void displayReorderQueue() {
+void displayReorderQueue() { //display item that are low in stock and need to be restocked
     struct QueueNode *q = front;
     if (q == NULL) { printf("Reorder queue is empty.\n"); return; }
     printf("\nReorder queue (first row is reordered first)\n");
@@ -215,8 +215,8 @@ void displayReorderQueue() {
     printf("| %-4s | %-20s | %6s | %6s |\n", "ID", "Name", "Stock", "Level");
     printf(QUEUE_LINE);
     while (q != NULL) {
-        struct Item *it = findItem(q->item_id);
-        if (it != NULL)
+        struct Item *it = findItem(q->item_id);//finding item in inventory list using id
+        if (it != NULL)  //if item was deleted,it will not be displayed
             printf("| %-4d | %-20s | %6d | %6d |\n",
                    it->id, it->name, it->quantity, it->reorder_level);
         q = q->next;
@@ -224,31 +224,29 @@ void displayReorderQueue() {
     printf(QUEUE_LINE);
 }
 
-void processReorder() {
-    int id = dequeueReorder();
+void processReorder() { //function to restock item that is low in stock
+    int id = dequeueReorder();// to remove item from queue that is being restocked
     if (id == -1) { printf("Nothing to reorder.\n"); return; }
     struct Item *t = findItem(id);
     if (t == NULL) { printf("Item no longer exists.\n"); return; }
     int add;
-    printf("Reordering %s. Quantity to add: ", t->name);
-    scanf("%d", &add);
-    t->quantity += add;
-    printf("New stock of %s = %d\n", t->name, t->quantity);
+    printf("Reordering %s. Quantity to add: ", t->name);// how much to to add
+    scanf("%d", &add);// adding stock
+    t->quantity += add;// updating stock
+    printf("New stock of %s = %d\n", t->name, t->quantity);//display new stock
 }
 
-void checkAvailability() {
+void checkAvailability() {//function to check ifnitem is in stock or not
     int id;
     printf("Item ID: ");
     scanf("%d", &id);
-    struct Item *t = findItem(id);
-    if (t == NULL) printf("Item not found.\n");
-    else if (t->quantity > 0)
+    struct Item *t = findItem(id); //fining item using using its id from inventory list 
+    if (t == NULL) printf("Item not found.\n");//not found
+    else if (t->quantity > 0) //if in stock display quantity
         printf("%s is available. Stock = %d\n", t->name, t->quantity);
-    else
+    else// not found or out of stock
         printf("%s is OUT OF STOCK.\n", t->name);
 }
-
-
 /* MEMBER 3 : sales records (linked list) + NODE DELETION + freeAll */
 
 void recordSale() {
